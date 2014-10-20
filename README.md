@@ -17,6 +17,6 @@ The aim for this app was to implement:
 - Nearby restaurants/food shops near the end of the run as a reward
 - Vibration feature to indicate to the user to turn left or right
 
-Screenshots:
+### Screenshots:
 ![UI](http://s3.amazonaws.com/challengepost/photos/production/software_photos/000/161/515/datas/xlarge.png?1411308886 "PebbleRun watch UI")
 ![Web-app](http://s3.amazonaws.com/challengepost/photos/production/software_photos/000/161/516/datas/xlarge.png?1411308884 "Web-app sample")
