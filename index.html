@@ -1,0 +1,153 @@
+<html>
+  <head>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+    <meta charset="utf-8">
+    <title>PebbleRun</title>
+    <style>
+      html, body, #map-canvas {
+        height: 100%;
+        margin: 0px;
+        padding: 0px
+      }
+      #panel {
+        position: absolute;
+        top: 5px;
+        left: 50%;
+        margin-left: -180px;
+        z-index: 5;
+        background-color: #fff;
+        padding: 5px;
+        border: 1px solid #999;
+      }
+
+      h1 {
+        font-family: "HelveticaNeue-Light", "Helvetica", "Arial", sans-serif;
+        padding: 15px;
+        margin: 0;
+      }
+
+    	img#logo {
+    		display: block;
+        max-width: 300px;
+        max-height: 75px;
+    	}
+
+      #directions-panel {
+        height: 100%;
+        float: right;
+        width: 390px;
+        overflow: auto;
+      }
+
+      #map-canvas {
+        margin-right: 400px;
+      }
+
+      #control {
+        background: #fff;
+        padding: 5px;
+        font-size: 14px;
+        font-family: Arial;
+        border: 1px solid #ccc;
+        box-shadow: 0 2px 2px rgba(33, 33, 33, 0.4);
+        display: none;
+      }
+
+      @media print {
+        #map-canvas {
+          height: 500px;
+          margin: 0;
+        }
+
+        #directions-panel {
+          float: none;
+          width: auto;
+        }
+      }
+    </style>
+  </head>
+  <body>
+  <img id="logo" src="./img/logo.png" alt="PebbleRun" />
+    <div id="control">
+      <strong>Start:</strong>
+      <input type="text" id="start"/>
+      <strong>End:</strong>
+      <input type="text" id="end"/>
+      <strong>Mode of travel</strong>
+        <select id="mode" onchange="setMode()">
+          <option value="WALKING">Walk</option>
+          <option value="BICYCLING">Bike</option>
+        </select>
+      <button type="submit" onclick="calcRoute()">Submit</button>
+    </div>
+    <div id="directions-panel"></div>
+    <div id="map-canvas"></div>
+    <script src="https://maps.googleapis.com/maps/api/js?v=3.exp"></script>
+    <script>
+      var directionsDisplay;
+      var directionsService = new google.maps.DirectionsService();
+      var mode= 'WALKING';
+      var dirArray = [];
+
+      function initialize() {
+        directionsDisplay = new google.maps.DirectionsRenderer();
+        var mapOptions = {
+          zoom: 7,
+          center: new google.maps.LatLng(41.850033, -87.6500523)
+        };
+        var map = new google.maps.Map(document.getElementById('map-canvas'),
+            mapOptions);
+        directionsDisplay.setMap(map);
+        directionsDisplay.setPanel(document.getElementById('directions-panel'));
+
+        var control = document.getElementById('control');
+        control.style.display = 'block';
+        map.controls[google.maps.ControlPosition.TOP_CENTER].push(control);
+      }
+
+      function calcRoute() {
+        var start = document.getElementById('start').value;
+        var end = document.getElementById('end').value;
+        var newMode = getMode();
+        console.log(start + " " + end + " " + newMode);
+        var request = {
+          origin: start,
+          destination: end,
+          travelMode: getMode()
+        };
+        directionsService.route(request, function(response, status) {
+          formatResponse(response);
+          if (status == google.maps.DirectionsStatus.OK) {
+            directionsDisplay.setDirections(response);
+          }
+        });
+      }
+
+      function setMode() {
+        mode = document.getElementById('mode').value;
+      }
+
+      function getMode() {
+        switch( mode ) {
+          case 'WALKING':
+            return google.maps.TravelMode.WALKING;
+          case 'BICYCLING':
+            return google.maps.TravelMode.BICYCLING;
+        }
+      }
+
+      function formatResponse( response ) {
+        for(var i = 0; i < response.routes[0].legs[0].steps.length; i++) {
+          dirArray[i] = response.routes[0].legs[0].steps[i];
+        }
+
+        var json = JSON.stringify(dirArray);
+        console.log(dirArray);
+        //console.log(json);
+      }
+
+      google.maps.event.addDomListener(window, 'load', initialize);
+
+    </script>
+  </body>
+</html>
